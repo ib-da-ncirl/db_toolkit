@@ -19,17 +19,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from io import SEEK_SET
-from os import path
-import re
 import logging
 
-import azure.cosmos
-from azure.cosmos.cosmos_client import CosmosClient
 import azure.cosmos.documents as documents
+import azure.cosmos.errors as errors
+import azure.cosmos.http_constants as http_constants
+from azure.cosmos.cosmos_client import CosmosClient
 
-from db_toolkit.cosmosdb_sql import ALIAS
-from db_toolkit.cosmosdb_sql import select
+from .cosmosdb_sql import ALIAS
+from .cosmosdb_sql import select
+from db_toolkit.misc.config_reader import load_cfg_file
+from db_toolkit.misc.config_reader import load_cfg_filename
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -38,85 +38,65 @@ class CosmosDb:
     """
     CosmosDb client
     """
-    __testmode__ = False
 
-    client = None
+    REQUIRED_KEYS = (
+        'endpoint',         # URI of the database account
+        'key'               # primary key of the database account
+    )
+    KEYS = REQUIRED_KEYS + (
+        'dbname',           # name of the database
+        'container_name'    # name of the database container
+    )
 
-    endpoint = None
-    key = None
-    database_name = None
-    container_name = None
-    partition_key = None
-
-    def __init__(self, cfgfilename=None, endpoint=None, key=None, database_name=None, container_name=None):
+    def __init__(self, cfg_filename=None, endpoint=None, key=None, dbname=None, container_name=None, test=False):
+        """
+        Initialise object
+        :param cfg_filename: Path of configuration file
+        :param endpoint: URI of the database account
+        :param key: primary key of the database account
+        :param dbname: name of the database
+        :param container_name: name of the database container
+        :param test: test mode flag; default False
+        """
         self.endpoint = endpoint
         self.key = key
-        self.database_name = database_name
+        self.dbname = dbname
         self.container_name = container_name
-        if cfgfilename is not None:
-            self._load_cfgfilename(cfgfilename)
+        self.partition_key = None
+        if cfg_filename is not None:
+            self._load_cfg_filename(cfg_filename)
 
-        if self.endpoint is None:
-            raise ValueError('Missing endpoint configuration')
-        if self.key is None:
-            raise ValueError('Missing key configuration')
+        # check for missing required keys
+        for key in CosmosDb.REQUIRED_KEYS:
+            if self[key] is None:
+                raise ValueError(f'Missing {key} configuration')
 
-        if not CosmosDb.__testmode__:
+        # if not in test mode, create client
+        if not test:
             self.client = CosmosClient(self.endpoint, {'masterKey': self.key})
 
-    def _load_cfgfile(self, cfgfile):
+    def __set_config(self, config):
+        """
+        Set the configuration
+        :param config: dict with settings
+        """
+        for key in config.keys():
+            if key in CosmosDb.KEYS:
+                self[key] = config[key]
+
+    def _load_cfg_file(self, cfg_file):
         """
         Read settings from specified configuration file
-        :param cfgfile: Configuration file descriptor to load
+        :param cfg_file: Configuration file descriptor to load
         """
-        if cfgfile is None:
-            raise ValueError('Missing configuration file argument')
+        self.__set_config(load_cfg_file(cfg_file, CosmosDb.KEYS))
 
-        cfgfile.seek(0, SEEK_SET)  # seek start of file
-        count = 0
-        for line in cfgfile:
-            line = line.strip()
-            count += 1
-
-            # skip blank or commented lines
-            if len(line) == 0:
-                continue
-            if line.startswith('#'):
-                continue
-
-            keyval = re.match(r'(\w+):(.*)', line)
-            if not keyval:
-                raise ValueError(f'Invalid configuration file entry: line {count}')
-
-            key = keyval.groups()[0].lower().strip()
-            if len(key) == 0:
-                raise ValueError(f'Missing key entry: line {count} ')
-            value = keyval.groups()[1].strip()
-            if len(value) == 0:
-                raise ValueError(f'Missing value entry: line {count} ')
-            if key == 'endpoint':
-                self.endpoint = value
-            elif key == 'key':
-                self.key = value
-            elif key == 'database_name':
-                self.database_name = value
-            elif key == 'container_name':
-                self.container_name = value
-
-    def _load_cfgfilename(self, cfgfilename):
+    def _load_cfg_filename(self, cfg_filename):
         """
         Read settings from specified configuration file
-        :param cfgfilename: Path of configuration file to load
+        :param cfg_filename: Path of configuration file to load
         """
-        if cfgfilename is None:
-            raise ValueError('Missing configuration file argument')
-        if not isinstance(cfgfilename, str):
-            raise ValueError('Invalid configuration file argument: expected string')
-        if not path.exists(cfgfilename):
-            raise ValueError(f'Configuration file does not exist: {cfgfilename}')
-
-        with open(cfgfilename, 'r') as cfgfile:
-            self._load_cfgfile(cfgfile)
+        self.__set_config(load_cfg_filename(cfg_filename, CosmosDb.KEYS))
 
     def make_db_link(self, name=None):
         """
@@ -126,7 +106,7 @@ class CosmosDb:
         :rtype: string
         """
         if name is None:
-            name = self.database_name
+            name = self.dbname
         if name is None:
             raise ValueError('Database name not configured')
         link = f'dbs/{name}'
@@ -167,8 +147,8 @@ class CosmosDb:
         :return:
         """
         try:
-            database = self.client.CreateDatabase({'id': self.database_name})
-        except azure.cosmos.errors.HTTPFailure:
+            database = self.client.CreateDatabase({'id': self.dbname})
+        except errors.HTTPFailure:
             database = self.client.ReadDatabase(self.make_db_link())
         return database
 
@@ -180,8 +160,8 @@ class CosmosDb:
         """
         try:
             database = self.client.ReadDatabase(self.make_db_link())
-        except azure.cosmos.errors.HTTPFailure as e:
-            if e.status_code == azure.cosmos.http_constants.StatusCodes.NOT_FOUND:
+        except errors.HTTPFailure as e:
+            if e.status_code == http_constants.StatusCodes.NOT_FOUND:
                 database = None
             else:
                 raise e
@@ -212,8 +192,8 @@ class CosmosDb:
                                 'partitionKey': self.partition_key}
         try:
             container = self.client.CreateContainer(self.make_db_link(), container_definition, {'offerThroughput': 400})
-        except azure.cosmos.errors.HTTPFailure as e:
-            if e.status_code == azure.cosmos.http_constants.StatusCodes.CONFLICT:
+        except errors.HTTPFailure as e:
+            if e.status_code == http_constants.StatusCodes.CONFLICT:
                 container = self.client.ReadContainer(self.make_container_link())
             else:
                 raise e
@@ -228,8 +208,8 @@ class CosmosDb:
         """
         try:
             container = self.client.ReadContainer(self.make_container_link())
-        except azure.cosmos.errors.HTTPFailure as e:
-            if e.status_code == azure.cosmos.http_constants.StatusCodes.NOT_FOUND:
+        except errors.HTTPFailure as e:
+            if e.status_code == http_constants.StatusCodes.NOT_FOUND:
                 container = None
             else:
                 raise e
@@ -262,14 +242,29 @@ class CosmosDb:
         return self.client.QueryItems(self.make_container_link(), query, options=options, partition_key=partition_key)
 
     def query_items(self, selection, alias=ALIAS, project=None, where=None, options=None, partition_key=None):
+        """
+        Perform a query
+        See https://docs.microsoft.com/en-ie/azure/cosmos-db/sql-query-getting-started
+        :param selection: entries to select; may be
+                - string, e.g. '*'
+                - list, e.g. ['id', 'name']
+                - dict, e.g. {
+        :param alias:
+        :param project:
+        :param where: dict with 'key' as the property and 'value' as the required value for the
+        :param options: The request options for the request (default value None)
+        :param partition_key: Partition key for the query (default value None)
+        :return: List of json objects
+        :rtype: List
+        """
         return self.query_items_sql(select(self.container_name, selection, alias=alias, project=project, where=where),
                                     options=options, partition_key=partition_key)
 
     def delete_items(self, partition_key, where=None):
         """
-
-        :param where:
+        Delete an item(s) from the database
         :param partition_key: value of partition path for container; e.g. partition path = '/day', partition path = 'monday'
+        :param where:
         :return:
         """
         # The SQL API in Cosmos DB does not support the SQL DELETE statement.
@@ -281,8 +276,8 @@ class CosmosDb:
                 # TODO DeleteItem is supposed to return the deleted doc but only seems to be returning None
                 deleted = self.client.DeleteItem(link, {'partitionKey': partition_key})
                 deleted_items.append(deleted)
-        except azure.cosmos.errors.HTTPFailure as e:
-            if e.status_code == azure.cosmos.http_constants.StatusCodes.NOT_FOUND:
+        except errors.HTTPFailure as e:
+            if e.status_code == http_constants.StatusCodes.NOT_FOUND:
                 logging.warning(f'Delete NOT_FOUND: {link} on partition "{partition_key}"')
                 logging.warning(f' Valid partition keys are: {self.partition_key["paths"]}')
                 deleted_items = []
@@ -290,3 +285,23 @@ class CosmosDb:
                 raise e
 
         return deleted_items
+
+    def __setitem__(self, key, value):
+        """
+        Implement assignment to self[key]
+        :param key: object property name
+        :param value: value to assign
+        """
+        if key not in CosmosDb.KEYS:
+            raise ValueError(f'The key "{key}" is not valid')
+        self.__dict__[key] = value
+
+    def __getitem__(self, key):
+        """
+        Implement evaluation of self[key]
+        :param key: object property name
+        """
+        if key not in CosmosDb.KEYS:
+            raise ValueError(f'The key "{key}" is not valid')
+        return self.__dict__[key]
+

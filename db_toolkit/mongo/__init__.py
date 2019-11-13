@@ -18,3 +18,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+from .MongoDb import MongoDb
+
+# if somebody does "from db_toolkit.mongo import *", this is what they will
+# be able to access:
+__all__ = [
+    'MongoDb',
+]

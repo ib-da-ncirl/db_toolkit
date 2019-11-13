@@ -23,56 +23,84 @@ import unittest
 from unittest import TestCase
 from io import StringIO
 from io import SEEK_SET
-from db_toolkit.CosmosDb import CosmosDb
+from cosmosdb.CosmosDb import CosmosDb
+from testfixtures import LogCapture
 
 
 class TestCosmosDb(TestCase):
 
-    def test_load_cfgfile(self):
+    def test_load_cfg_file(self):
+
+        # need to be same order as PostgresDb.KEYS
+        values = (
+            'my db endpoint',
+            'my db key',
+            'my db name',
+            'my container name'
+        )
+        end_idx = 0
+        key_idx = 1
+        dbname_idx = 2
+        contain_idx = 3
+
         # check less than min constructor arguments
-        self.assertRaises(ValueError, CosmosDb)
-        self.assertRaises(ValueError, CosmosDb, endpoint='endpoint')
+        for end in [None, values[end_idx]]:
+            for quay in [None, values[key_idx]]:
+                if end is None or quay is None:
+                    self.assertRaises(ValueError, CosmosDb, endpoint=end, key=quay)
 
-        endpoint = 'my db endpoint'
-        key = 'my db key'
-        database_name = 'my db name'
-        container_name = 'my container name'
+        # valid config file
+        str_io = StringIO()
+        str_io.write(' # this is a comment\n')
+        for idx in list(range(len(CosmosDb.KEYS))):
+            str_io.write(f'{CosmosDb.KEYS[idx]}= {values[idx]}\n')
+        str_io.seek(0, SEEK_SET)
 
-        strIo = StringIO()
-        strIo.write(' # this is a comment\n')
-        strIo.write(f'endpoint: {endpoint}\n')
-        strIo.write(f'key: {key}\n')
-        strIo.write(f'database_name: {database_name}\n')
-        strIo.write(f'container_name: {container_name}\n')
-        strIo.seek(0, SEEK_SET)
+        # test object
+        db = CosmosDb(endpoint='fake endpoint', key='fake key', test=True)
 
-        CosmosDb.__testmode__ = True
-        db = CosmosDb(endpoint='fake endpoint', key='fake key')
+        # test missing config file handle
+        self.assertRaises(ValueError, db._load_cfg_file, None)
 
-        self.assertRaises(ValueError, db._load_cfgfile, None)
+        # test valid config file handle
+        db._load_cfg_file(str_io)
+        for idx in list(range(len(CosmosDb.KEYS))):
+            self.assertEqual(db[CosmosDb.KEYS[idx]], values[idx])
 
-        db._load_cfgfile(strIo)
-        self.assertEqual(db.endpoint, endpoint)
-        self.assertEqual(db.key, key)
-        self.assertEqual(db.database_name, database_name)
-        self.assertEqual(db.container_name, container_name)
+        # test missing value
+        str_io.truncate(0)
+        str_io.seek(0, SEEK_SET)
+        str_io.write(f'endpoint= \n')
+        self.assertRaises(ValueError, db._load_cfg_file, str_io)
 
-        strIo.truncate(0)
-        strIo.seek(0, SEEK_SET)
-        strIo.write(f'endpoint: \n')
-        self.assertRaises(ValueError, db._load_cfgfile, strIo)
+        # test missing key
+        str_io.truncate(0)
+        str_io.seek(0, SEEK_SET)
+        str_io.write(f'= value\n')
+        self.assertRaises(ValueError, db._load_cfg_file, str_io)
 
-        strIo.truncate(0)
-        strIo.seek(0, SEEK_SET)
-        strIo.write(f': value\n')
-        self.assertRaises(ValueError, db._load_cfgfile, strIo)
+        # invalid separator
+        str_io.truncate(0)
+        str_io.seek(0, SEEK_SET)
+        str_io.write(f'endpoint: value\n')
+        self.assertRaises(ValueError, db._load_cfg_file, str_io)
 
-        strIo.close()
+        # unknown key/value
+        str_io.truncate(0)
+        str_io.seek(0, SEEK_SET)
+        str_io.write(f'unknown_key= value\n')
+        with LogCapture() as log_cap:
+            db._load_cfg_file(str_io)
+            log_cap.check(
+                ('root', 'INFO', 'Ignoring unknown entry on line 1'),
+            )
 
-        self.assertRaises(ValueError, CosmosDb, cfgfilename='doesnotexist')
-        self.assertRaises(ValueError, CosmosDb, cfgfilename=['i am a list'])
+        str_io.close()
 
-        CosmosDb.__testmode__ = False
+        # test invalid config file path
+        self.assertRaises(ValueError, CosmosDb, cfg_filename='doesnotexist')
+        # test invalid config file argument type
+        self.assertRaises(ValueError, CosmosDb, cfg_filename=['i am a list'])
 
 
 if __name__ == '__main__':

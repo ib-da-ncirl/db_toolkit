@@ -18,3 +18,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+from .CosmosDb import CosmosDb
+from .cosmosdb_sql import select
+from .cosmosdb_sql import property_quote_if
+
+# if somebody does "from db_toolkit.cosmosdb import *", this is what they will
+# be able to access:
+__all__ = [
+    'CosmosDb',
+    'select',
+    'property_quote_if',
+]

@@ -19,10 +19,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .version import __version__
-from .CosmosDb import CosmosDb
-from .cosmosdb_sql import select
-from .cosmosdb_sql import property_quote_if
+from .cosmosdb.CosmosDb import CosmosDb
+from .cosmosdb.cosmosdb_sql import select
+from .cosmosdb.cosmosdb_sql import property_quote_if
+
+from .mongo.MongoDb import MongoDb
+
+from .postgres.PostgresDb import PostgresDb
+
 
 # if somebody does "from db_toolkit import *", this is what they will
 # be able to access:
@@ -30,4 +34,6 @@ __all__ = [
     'CosmosDb',
     'select',
     'property_quote_if',
+    'MongoDb',
+    'PostgresDb',
 ]

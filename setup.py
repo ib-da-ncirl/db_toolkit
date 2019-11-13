@@ -1,6 +1,5 @@
-import setuptools
 import os
-import sys
+import setuptools
 
 _here = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,11 +18,13 @@ setuptools.setup(
     description="Database utility functions/classes",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/ib-da-ncirl/db_toolkit",
     license='MIT',
     packages=setuptools.find_packages(),
     install_requires=[
       'azure-cosmos>=3.1.2',
+      'psycopg2>=2.8.4',
+      'pymongo>=3.9.0'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

@@ -19,7 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-ALIAS = 'f'
+ALIAS = 'f'     # default alias to use in statements
 
 
 def property_quote_if(alias, name):
@@ -28,6 +28,7 @@ def property_quote_if(alias, name):
     :param alias: object alias
     :param name: property name
     :return: property reference
+    :rtype: str
     """
     if ' ' in name:
         # This syntax is useful to escape a property that contains spaces, special characters, or has the same name as a
@@ -49,7 +50,8 @@ def select(container_name, selection, alias=ALIAS, project=None, where=None):
     :param alias:
     :param project:
     :param where: dict with 'key' as the property and 'value' as the required value for the
-    :return:
+    :return: SQL string
+    :rtype: str
     """
     sql = 'SELECT '
     if isinstance(selection, dict):
@@ -91,6 +93,7 @@ def select(container_name, selection, alias=ALIAS, project=None, where=None):
     sql += f'FROM {container_name} {alias} '
 
     if where is not None:
+        # TODO implement wheres other than =
         sql += f'WHERE '
         count = len(where) - 1
         for key in where.keys():

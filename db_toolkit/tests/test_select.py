@@ -20,8 +20,8 @@
 # SOFTWARE.
 
 from unittest import TestCase
-from db_toolkit.cosmosdb_sql import select
-from db_toolkit.cosmosdb_sql import property_quote_if
+from cosmosdb.cosmosdb_sql import select
+from cosmosdb.cosmosdb_sql import property_quote_if
 
 
 class TestSelect(TestCase):
