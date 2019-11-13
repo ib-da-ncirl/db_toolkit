@@ -1,0 +1,20 @@
+# Sample configuration file for PostgreSQL
+
+# The configuration file should of a set of key/value pairs separated by '='.
+# Lines beginning with '#' are ignored.
+
+# The required keys are as follows:
+#   user:     user name used to authenticate
+#   password: password used to authenticate
+#   dbname:   the database name
+
+user = myuser
+password = mypassword
+dbname = mydatabase
+
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   host: database host address (defaults to UNIX socket if not provided)
+#   port: connection port number (defaults to 5432 if not provided)
+
+host = mypostgres.server.com
+port = 5432

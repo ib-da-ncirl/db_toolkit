@@ -1,0 +1,20 @@
+# Sample configuration file for CosmosDb
+
+# The configuration file should of a set of key/value pairs separated by '='.
+# Lines beginning with '#' are ignored.
+
+# The required keys are as follows:
+#   endpoint: The URI of the database account, e.g. 'https://mycosmosdb.documents.azure.com:443/'
+#   key:      The primary key of the database account
+
+endpoint = https://mycosmosdb.documents.azure.com:443/
+key = primary_key
+
+
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   dbname:         The name of the database
+#   container_name: The name of the database container
+
+dbname = test
+container_name = container
+

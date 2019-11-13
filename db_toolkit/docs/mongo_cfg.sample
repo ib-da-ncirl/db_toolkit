@@ -1,0 +1,25 @@
+# Sample configuration file for MongoDb
+
+# The configuration file should of a set of key/value pairs separated by '='.
+# Lines beginning with '#' are ignored.
+
+# The required keys are as follows:
+#   server:   The server ip address/url, e.g. 'mymongodb.server.com'
+
+server = mymongodb.server.com
+
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   username:    The username to login in with
+#   password:    The password to login in with
+#   port:        The port number to use, default to 27017
+#   dbname:      The name of the database
+#   auth_source: The name of the authentication database
+#   collection:  The name of the database collection
+
+username = myusername
+password = mypassword
+port = 27017
+
+dbname = mydatabase
+auth_source = admin
+collection = mycollection
