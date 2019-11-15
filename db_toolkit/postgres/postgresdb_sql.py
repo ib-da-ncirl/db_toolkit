@@ -19,16 +19,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .PostgresDb import PostgresDb
-from .postgresdb_sql import does_table_exist_sql
-from .postgresdb_sql import count_sql
-from .postgresdb_sql import estimate_count_sql
 
-# if somebody does "from db_toolkit.postgres import *", this is what they will
-# be able to access:
-__all__ = [
-    'PostgresDb',
-    'does_table_exist_sql',
-    'count_sql',
-    'estimate_count_sql',
-]
+def does_table_exist_sql(name):
+    """
+    Generate SQL to check if a table exists
+    See https://www.dbrnd.com/2017/07/postgresql-different-options-to-check-if-table-exists-in-database-to_regclass/
+    :param name: table name
+    :return: SQL string
+    """
+    return f"SELECT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLES.TABLE_NAME='{name}');"
+
+
+def count_sql(name):
+    """
+    Generate SQL to count the number of rows in a table
+    :param name: table name
+    :return: SQL string
+    """
+    return f'SELECT COUNT(*) FROM "{name}";'
+
+
+def estimate_count_sql(name):
+    """
+    Generate SQL to estimate the number of rows in a table
+    See https://wiki.postgresql.org/wiki/Count_estimate
+    :param name: table name
+    :return: SQL string
+    """
+    return f"SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='{name}';"
+

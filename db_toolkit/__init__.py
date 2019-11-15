@@ -26,6 +26,9 @@ from .cosmosdb.cosmosdb_sql import property_quote_if
 from .mongo.MongoDb import MongoDb
 
 from .postgres.PostgresDb import PostgresDb
+from .postgres.postgresdb_sql import does_table_exist_sql
+from .postgres.postgresdb_sql import count_sql
+from .postgres.postgresdb_sql import estimate_count_sql
 
 
 # if somebody does "from db_toolkit import *", this is what they will
@@ -36,4 +39,7 @@ __all__ = [
     'property_quote_if',
     'MongoDb',
     'PostgresDb',
+    'does_table_exist_sql',
+    'count_sql',
+    'estimate_count_sql',
 ]

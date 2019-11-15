@@ -102,7 +102,7 @@ class PostgresDb:
                     password=self.password,
                     host=self.host,
                     port=self.port,
-                    database=self.dbname)
+                    dbname=self.dbname)
 
                 # log PostgreSQL Connection properties
                 logging.info(self.connection.get_dsn_parameters())
@@ -138,8 +138,19 @@ class PostgresDb:
             cursor = self.connection.cursor()
         else:
             cursor = None
-            logging.warning('No connection available')
+            logging.warning('No connection available, cursor unavailable')
         return cursor
+
+    def commit(self):
+        """
+        Commit any pending transaction to the database
+        :return: Cursor or None if no connection available
+        """
+        if self.is_connected():
+            # http://initd.org/psycopg/docs/connection.html
+            self.connection.commit()
+        else:
+            logging.warning('No connection available, cannot commit')
 
     def get_configuration(self):
         """
