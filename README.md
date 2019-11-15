@@ -30,7 +30,9 @@ Current functionality includes:
 ## Installation
 Please see https://packaging.python.org/tutorials/installing-packages/ for general information on installation methods.
 
-**db_toolkit** is currently available on Test PyPI https://test.pypi.org/project/db-toolkit/
+Install dependencies via
+
+    pip install -r requirements.txt
 
 
 

@@ -1,0 +1,4 @@
+azure-cosmos>=3.1.2
+psycopg2>=2.8.4
+pymongo>=3.9.0
+
