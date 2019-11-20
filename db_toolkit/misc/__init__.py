@@ -19,12 +19,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .config_reader import load_cfg_file
-from .config_reader import load_cfg_filename
+from .config_reader import (
+    load_cfg_file,
+    load_cfg_filename
+)
+from .get_env import (
+    get_file_path,
+    get_dir_path,
+    test_file_path,
+    test_dir_path
+)
+
 
 # if somebody does "from db_toolkit.misc import *", this is what they will
 # be able to access:
 __all__ = [
     'load_cfg_file',
     'load_cfg_filename',
+    'get_file_path',
+    'get_dir_path',
+    'test_file_path',
+    'test_dir_path',
 ]

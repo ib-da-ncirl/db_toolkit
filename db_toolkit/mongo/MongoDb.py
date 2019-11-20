@@ -218,6 +218,36 @@ class MongoDb:
             self.client.close()
             self.client = None
 
+    def get_database(self):
+        """
+        Get the database for this object
+        :return: Database or None
+        :rtype: pymongo.database.Database
+        """
+        db = None
+        connection = self.get_connection()
+        if connection is not None:
+            if self.dbname is not None:
+                db = connection[self.dbname]
+            else:
+                logging.warning(f'Database not specified: {self.server}')
+        return db
+
+    def get_collection(self):
+        """
+        Get the collection for this object
+        :return: Collection or None
+        :rtype: pymongo.collection.Collection
+        """
+        collection = None
+        db = self.get_database()
+        if db is not None:
+            if self.collection is not None:
+                collection = db[self.collection]
+            else:
+                logging.warning(f'Collection not specified: {self.server}/{self.dbname}')
+        return collection
+
     def get_configuration(self):
         """
         Return a dictionary with a copy of the configuration for this object
