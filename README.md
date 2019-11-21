@@ -27,6 +27,11 @@ Current functionality includes:
     Connection parameters may be specified during object creation, or via a configuration file.
     See [mongo_cfg.sample](db_toolkit/docs/mongo_cfg.sample).
     
+    **Note:**
+    If utilising the insert_many() method of pymongo.collection.Collection with an Azure Cosmos DB for MongoDb API 
+    server, consider using the MongoDb.insert_many() method instead, as it will attempt to continue in slower batch mode 
+    in the event of the throughput (RU/s) being exceeded and a BulkWriteError being raised.
+    
 ## Installation
 Please see https://packaging.python.org/tutorials/installing-packages/ for general information on installation methods.
 

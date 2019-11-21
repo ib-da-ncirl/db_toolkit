@@ -26,6 +26,7 @@ setuptools.setup(
       'psycopg2>=2.8.4',
       'pymongo>=3.9.0'
     ],
+    tests_require=['testfixtures>=6.10.2'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         "Programming Language :: Python :: 3",

@@ -20,7 +20,10 @@
 # SOFTWARE.
 
 from io import SEEK_SET
-from os import path
+from os import (
+    path,
+    getcwd
+)
 import re
 import logging
 
@@ -85,7 +88,8 @@ def load_cfg_filename(cfg_filename, keys, separator='='):
     if not isinstance(cfg_filename, str):
         raise ValueError('Invalid configuration file argument: expected string')
     if not path.exists(cfg_filename):
-        raise ValueError(f'Configuration file does not exist: {cfg_filename}')
+        raise ValueError(f'Configuration file does not exist: {cfg_filename}\n'
+                         f'  Current working directory: {getcwd()}')
 
     with open(cfg_filename, 'r') as cfg_file:
         config = load_cfg_file(cfg_file, keys, separator=separator)
