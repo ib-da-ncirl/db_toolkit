@@ -9,28 +9,24 @@ Current functionality includes:
 * CosmosDb
 
     Class to work with Azure Cosmo DB. 
-    
-    Connection parameters may be specified during object creation, or via a configuration file.
-    See [cosmos_cfg.sample](db_toolkit/docs/cosmos_cfg.sample).
-    
+       
 * PostgresDb
 
     Class to work with PostgreSQL.
     
-    Connection parameters may be specified during object creation, or via a configuration file.
-    See [postgres_cfg.sample](db_toolkit/docs/postgres_cfg.sample).
-
 * MongoDb
 
     Class to work with MongoDb.
-    
-    Connection parameters may be specified during object creation, or via a configuration file.
-    See [mongo_cfg.sample](db_toolkit/docs/mongo_cfg.sample).
-    
+
     **Note:**
     If utilising the insert_many() method of pymongo.collection.Collection with an Azure Cosmos DB for MongoDb API 
     server, consider using the MongoDb.insert_many() method instead, as it will attempt to continue in slower batch mode 
     in the event of the throughput (RU/s) being exceeded and a BulkWriteError being raised.
+    
+Connection parameters may be specified during object creation, or via a configuration file.
+See [cosmos_cfg.sample](db_toolkit/docs/cosmos_cfg.sample), [postgres_cfg.sample](db_toolkit/docs/postgres_cfg.sample) 
+or [mongo_cfg.sample](db_toolkit/docs/mongo_cfg.sample). If using a YAML configuration file
+with an application, see [sample.yaml](db_toolkit/docs/sample.yaml).
     
 ## Installation
 Please see https://packaging.python.org/tutorials/installing-packages/ for general information on installation methods.

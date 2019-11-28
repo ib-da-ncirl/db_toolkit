@@ -21,7 +21,8 @@
 
 from .config_reader import (
     load_cfg_file,
-    load_cfg_filename
+    load_cfg_filename,
+    load_yaml
 )
 from .get_env import (
     get_file_path,
@@ -30,12 +31,12 @@ from .get_env import (
     test_dir_path
 )
 
-
 # if somebody does "from db_toolkit.misc import *", this is what they will
 # be able to access:
 __all__ = [
     'load_cfg_file',
     'load_cfg_filename',
+    'load_yaml',
     'get_file_path',
     'get_dir_path',
     'test_file_path',

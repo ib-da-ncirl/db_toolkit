@@ -1,0 +1,61 @@
+# This is a sample configuration file
+
+# https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+
+
+# The required keys are as follows:
+#   server:   The server ip address/url, e.g. 'mymongodb.server.com'
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   username:         The username to login in with
+#   password:         The password to login in with
+#   port:             The port number to use, default to 27017
+#   dbname:           The name of the database
+#   collection:       The name of the database collection
+#   auth_source:      The name of the authentication database
+#   ssl:              Boolean (true/false) to enable or disables TLS/SSL for the connection
+#   replica_set:      The name of the replica set
+#   max_idle_time_ms: Maximum number of milliseconds that a connection can remain idle
+#   app_name:         Custom app name
+#   retry_writes:     Boolean (true/false) to enable retryable writes
+mongodb:
+  server: dapprojectmongodb.mongo.cosmos.azure.com
+  username: myusername
+  password: mypassword
+  port: 27017
+  dbname: mydatabase
+  collection: mycollection
+  auth_source: admin
+  ssl: true
+  replica_set: myreplicaset
+  max_idle_time_ms: 120000
+  app_name: myappname
+  retry_writes: false
+
+
+# The required keys are as follows:
+#   user:     user name used to authenticate
+#   password: password used to authenticate
+#   dbname:   the database name
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   host: database host address (defaults to UNIX socket if not provided)
+#   port: connection port number (defaults to 5432 if not provided)
+postgresdb:
+  user: myuser
+  password: mypassword
+  dbname: mydatabase
+  host: mypostgres.server.com
+  port: 5432
+
+
+# The required keys are as follows:
+#   endpoint: The URI of the database account, e.g. 'https://mycosmosdb.documents.azure.com:443/'
+#   key:      The primary key of the database account
+# Optional keys may be set in the configuration file or on an instance, and are as follows:
+#   dbname:         The name of the database
+#   container_name: The name of the database container
+cosmosdb:
+  endpoint: https://mycosmosdb.documents.azure.com:443/
+  key: primary_key
+  dbname: test
+  container_name: container
+

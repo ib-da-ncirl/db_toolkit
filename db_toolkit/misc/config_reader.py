@@ -26,6 +26,8 @@ from os import (
 )
 import re
 import logging
+import yaml
+from .get_env import test_file_path
 
 
 def load_cfg_file(cfg_file, keys, separator='='):
@@ -95,3 +97,29 @@ def load_cfg_filename(cfg_filename, keys, separator='='):
         config = load_cfg_file(cfg_file, keys, separator=separator)
 
     return config
+
+
+def load_yaml(yaml_path, key=None):
+    """
+    Load yaml file and return the configuration dictionary
+    :param yaml_path: path to the yaml configuration file
+    :param key: configuration key to return; default is all keys
+    :return: configuration dictionary
+    :rtype: dict
+    """
+    # verify path
+    if not path.exists(yaml_path):
+        raise ValueError(f'Invalid path: {yaml_path}')
+    if not test_file_path(yaml_path):
+        raise ValueError(f'Not a file path: {yaml_path}')
+
+    config_dict = None
+    with open(rf'{yaml_path}') as file:
+        # The FullLoader parameter handles the conversion from YAML scalar values to Python the dictionary format
+        configs = yaml.load(file, Loader=yaml.FullLoader)
+        if key is not None:
+            config_dict = configs[key]
+        else:
+            config_dict = configs
+
+    return config_dict

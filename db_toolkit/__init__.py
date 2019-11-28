@@ -19,27 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .cosmosdb.CosmosDb import CosmosDb
-from .cosmosdb.cosmosdb_sql import select
-from .cosmosdb.cosmosdb_sql import property_quote_if
-
-from .mongo.MongoDb import MongoDb
-
-from .postgres.PostgresDb import PostgresDb
-from .postgres.postgresdb_sql import does_table_exist_sql
-from .postgres.postgresdb_sql import count_sql
-from .postgres.postgresdb_sql import estimate_count_sql
-
+from .postgres.__init__ import __all__ as postgres_all
+from .mongo.__init__ import __all__ as mongo_all
+from .cosmosdb.__init__ import __all__ as cosmosdb_all
+from .misc.__init__ import __all__ as misc_all
 
 # if somebody does "from db_toolkit import *", this is what they will
 # be able to access:
-__all__ = [
-    'CosmosDb',
-    'select',
-    'property_quote_if',
-    'MongoDb',
-    'PostgresDb',
-    'does_table_exist_sql',
-    'count_sql',
-    'estimate_count_sql',
-]
+__all__ = postgres_all + mongo_all + cosmosdb_all + misc_all

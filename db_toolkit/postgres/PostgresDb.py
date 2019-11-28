@@ -44,10 +44,12 @@ class PostgresDb:
         'port'  # connection port number (defaults to 5432 if not provided)
     )
 
-    def __init__(self, cfg_filename=None, user=None, password=None, dbname=None, host=None, port=None):
+    def __init__(self, cfg_filename=None, cfg_dict=None,
+                 user=None, password=None, dbname=None, host=None, port=None):
         """
         Initialise object
         :param cfg_filename: Path of configuration file
+        :param cfg_dict: Configuration dict
         :param user: user name used to authenticate
         :param password: password used to authenticate
         :param dbname: the database name
@@ -62,6 +64,8 @@ class PostgresDb:
         self.connection = None
         if cfg_filename is not None:
             self._load_cfg_filename(cfg_filename)
+        elif cfg_dict is not None:
+            self.__set_config(cfg_dict)
 
         for key in PostgresDb.REQUIRED_KEYS:
             if self[key] is None:

@@ -82,6 +82,7 @@ class MongoDb:
         """
         Initialise object
         :param cfg_filename: Path of configuration file
+        :param cfg_dict: Configuration dict
         :param server: The server ip address/url, e.g. 'mymongodb.server.com'
         :param username: username to login in with
         :param password: password to login in with
@@ -98,13 +99,13 @@ class MongoDb:
         for key in MongoDb.KEYS:
             self[key] = None
         for key in kwargs:
-            if key not in ['test', 'cfg_filename', 'cfg_bundle']:
+            if key not in ['test', 'cfg_filename', 'cfg_dict']:
                 self[key] = kwargs[key]
 
         if 'cfg_filename' in kwargs:
             self._load_cfg_filename(kwargs['cfg_filename'])
-        elif 'cfg_bundle' in kwargs:
-            self.__set_config(kwargs['cfg_bundle'])
+        elif 'cfg_dict' in kwargs:
+            self.__set_config(kwargs['cfg_dict'])
 
         # check for missing required keys
         for key in MongoDb.REQUIRED_KEYS:
@@ -131,7 +132,7 @@ class MongoDb:
         if args['username'] is None and args['password'] is not None:
             raise ValueError('Password configured but no username configured')
         for key in ['port', 'max_idle_time_ms']:
-            if args[key] is not None and not args[key].isdigit():
+            if args[key] is not None and not str(args[key]).isdigit():
                 raise ValueError(f'Non-integer value specified for {key}')
         for key in ['ssl', 'retry_writes']:
             if args[key] is not None:

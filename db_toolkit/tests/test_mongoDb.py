@@ -218,10 +218,10 @@ class TestMongoDb(TestCase):
         dbname = values[dbname_idx]
         db.dbname = dbname
         link = db.make_db_link()
-        self.assertEqual(f'mongodb://{username}:{password}@{server}:{port}/{dbname}', link)
+        self.assertEqual(f'mongodb://{username}:{password}@{server}:{port}', link)
 
         # test query arguments
-        expected = f'mongodb://{username}:{password}@{server}:{port}/{dbname}/?'
+        expected = f'mongodb://{username}:{password}@{server}:{port}/?'
         for idx in range(auth_src_idx, app_name_idx + 1):
             db[MongoDb.KEYS[idx]] = values[idx]
             if idx > auth_src_idx:
@@ -239,13 +239,13 @@ class TestMongoDb(TestCase):
         db.username = 'fun@ny:user/name%'
         encoded_username = 'fun%40ny%3Auser%2Fname%25'
         link = db.make_db_link()
-        self.assertEqual(f'mongodb://{encoded_username}:{password}@{server}:{port}/{dbname}', link)
+        self.assertEqual(f'mongodb://{encoded_username}:{password}@{server}:{port}', link)
 
         # test percent encoded password
         db.password = '@:/%'
         encoded_password = '%40%3A%2F%25'
         link = db.make_db_link()
-        self.assertEqual(f'mongodb://{encoded_username}:{encoded_password}@{server}:{port}/{dbname}', link)
+        self.assertEqual(f'mongodb://{encoded_username}:{encoded_password}@{server}:{port}', link)
 
     def test_connection(self):
         """

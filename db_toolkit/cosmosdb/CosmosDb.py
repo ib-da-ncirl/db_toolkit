@@ -48,10 +48,12 @@ class CosmosDb:
         'container_name'    # name of the database container
     )
 
-    def __init__(self, cfg_filename=None, endpoint=None, key=None, dbname=None, container_name=None, test=False):
+    def __init__(self, cfg_filename=None, cfg_dict=None,
+                 endpoint=None, key=None, dbname=None, container_name=None, test=False):
         """
         Initialise object
         :param cfg_filename: Path of configuration file
+        :param cfg_dict: Configuration dict
         :param endpoint: URI of the database account
         :param key: primary key of the database account
         :param dbname: name of the database
@@ -65,6 +67,8 @@ class CosmosDb:
         self.partition_key = None
         if cfg_filename is not None:
             self._load_cfg_filename(cfg_filename)
+        elif cfg_dict is not None:
+            self.__set_config(cfg_dict)
 
         # check for missing required keys
         for key in CosmosDb.REQUIRED_KEYS:
