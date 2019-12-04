@@ -48,3 +48,11 @@ def estimate_count_sql(name):
     """
     return f"SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='{name}';"
 
+
+def drop_table_sql(name):
+    """
+    Generate SQL to drop a table
+    :param name: table name
+    :return: SQL string
+    """
+    return f"DROP TABLE IF EXISTS {name} CASCADE;"

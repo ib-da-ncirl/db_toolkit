@@ -1,1 +1,4 @@
-__version__ = '0.0.1.dev8'
+"""
+Overall version of the package
+"""
+__version__ = '0.0.1.dev9'

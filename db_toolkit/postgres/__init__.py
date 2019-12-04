@@ -20,9 +20,12 @@
 # SOFTWARE.
 
 from .PostgresDb import PostgresDb
-from .postgresdb_sql import does_table_exist_sql
-from .postgresdb_sql import count_sql
-from .postgresdb_sql import estimate_count_sql
+from .postgresdb_sql import (
+    does_table_exist_sql,
+    count_sql,
+    estimate_count_sql,
+    drop_table_sql,
+)
 
 # if somebody does "from db_toolkit.postgres import *", this is what they will
 # be able to access:
@@ -31,4 +34,5 @@ __all__ = [
     'does_table_exist_sql',
     'count_sql',
     'estimate_count_sql',
+    'drop_table_sql',
 ]
