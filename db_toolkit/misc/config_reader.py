@@ -27,6 +27,7 @@ from os import (
 import re
 import logging
 import yaml
+import pkg_resources
 from .get_env import test_file_path
 
 
@@ -116,7 +117,11 @@ def load_yaml(yaml_path, key=None):
     config_dict = None
     with open(rf'{yaml_path}') as file:
         # The FullLoader parameter handles the conversion from YAML scalar values to Python the dictionary format
-        configs = yaml.load(file, Loader=yaml.FullLoader)
+        if pkg_resources.get_distribution("PyYAML").version.startswith('5'):
+            # https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation
+            configs = yaml.load(file, Loader=yaml.FullLoader)
+        else:
+            configs = yaml.load(file)
         if key is not None:
             config_dict = configs[key]
         else:
