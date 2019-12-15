@@ -24,7 +24,8 @@ setuptools.setup(
     install_requires=[
       'azure-cosmos>=3.1.2',
       'psycopg2>=2.8.4',
-      'pymongo>=3.9.0'
+      'pymongo>=3.9.0',
+      'PyYAML>=3.13'
     ],
     tests_require=['testfixtures>=6.10.2'],
     classifiers=[
