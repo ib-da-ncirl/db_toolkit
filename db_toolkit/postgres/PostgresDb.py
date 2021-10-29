@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2019 Ian Buttimer
+# Copyright (c) 2019-2021 Ian Buttimer
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,8 @@ class PostgresDb:
         'dbname',  # the database name
     )
     KEYS = REQUIRED_KEYS + (
-        'host',  # database host address (defaults to UNIX socket if not provided)
+        'host',  # database host address (defaults to UNIX socket if not
+                 # provided)
         'port'  # connection port number (defaults to 5432 if not provided)
     )
 
@@ -53,7 +54,8 @@ class PostgresDb:
         :param user: user name used to authenticate
         :param password: password used to authenticate
         :param dbname: the database name
-        :param host: database host address (defaults to UNIX socket if not provided)
+        :param host: database host address (defaults to UNIX socket if not
+                     provided)
         :param port: connection port number (defaults to 5432 if not provided)
         """
         self.user = user
@@ -163,7 +165,8 @@ class PostgresDb:
         :rtype: dict
         """
         # new dict excluding non-config properties of object
-        dict_copy = {key: self.__dict__[key] for key in self.__dict__.keys() if key in PostgresDb.KEYS}
+        dict_copy = {key: self.__dict__[key]
+                     for key in self.__dict__.keys() if key in PostgresDb.KEYS}
         return dict_copy
 
     def __setitem__(self, key, value):

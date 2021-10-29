@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2019 Ian Buttimer
+# Copyright (c) 2019-2021 Ian Buttimer
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ from os import (
     path,
     getcwd
 )
+from decimal import Decimal
 import re
 import logging
 import yaml
@@ -116,8 +117,10 @@ def load_yaml(yaml_path, key=None):
 
     config_dict = None
     with open(rf'{yaml_path}') as file:
-        # The FullLoader parameter handles the conversion from YAML scalar values to Python the dictionary format
-        if pkg_resources.get_distribution("PyYAML").version.startswith('5'):
+        # The FullLoader parameter handles the conversion from YAML scalar
+        # values to Python the dictionary format
+        version = Decimal(pkg_resources.get_distribution("PyYAML").version)
+        if version >= 5.1:
             # https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation
             configs = yaml.load(file, Loader=yaml.FullLoader)
         else:
